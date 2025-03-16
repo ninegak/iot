@@ -38,7 +38,6 @@ def RGB(event, x, y, flags, param):
 cv2.namedWindow('Video')
 cv2.setMouseCallback('Video', RGB)
 
-cap = cv2.VideoCapture('rtsp://admin:admin1234@172.17.18.36')
 
 # fourcc = cv2.VideoWriter_fourcc(*'XVID')
 # out = cv2.VideoWriter('output.mp4', fourcc, 20.0, (1020, 500))
