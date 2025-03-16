@@ -8,26 +8,27 @@ model = YOLO('yolo11n.pt')
 
 # area1 = Red
 # area2 = Blue
+#right
+lab6_z1 = [(781,392), (809,391), (850,423), (823,434)]
+lab6_z2 = [(744,393), (765,393), (810,442), (781, 445)]
 
-lab6_z1 = [(655, 223), (663, 220), (692, 257), (685, 261)]
-lab6_z2 = [(639, 230), (646, 227), (671, 265), (663, 269)]
+shomrom_z1 = [(753,330), (770,331 ), (798,367), (782,369)]
+shomrom_z2 = [(724, 368),(712,334 ) ,(735,333 ), (751,367 )]
 
-shomrom_z1 = [(627, 189), (635, 184), (657, 213), (646, 215)]
-shomrom_z2 = [(604, 194), (612, 190), (630, 218), (625, 224)]
-
-lab8_z1 = [(608, 147), (614, 147), (620, 158), (613, 159)]
-lab8_z2 = [(588, 150), (594, 150), (600, 161), (593, 162)]
+lab8_z1 = [(704, 258), (716,256), (730, 273), (715,277)]
+lab8_z2 = [(681,260), (692,260), (700,278), (686,280)]
 
 #left
 # x2 x4 x3 x1
-smo2_z1 = [(380, 206), (391, 209), (415, 184), (407, 180)]
-smo2_z2 = [(408, 212), (421, 220), (442, 194), (431, 190)]
+# เก็บของ
+smo2_z1 = [(349, 371), (380, 323), (399, 325), (368, 372)]
+smo2_z2 = [(411, 326), (387, 375), (414, 380), (435, 327)]
 
-smo1_z1 = [(395, 346), (417, 354), (433, 321), (414, 314)]
-smo1_z2 = [(429, 359), (443, 358), (452, 328), (440, 324)]
+smo1_z1 = [(237, 446), (279, 396), (301, 404), (261, 452)]
+smo1_z2 = [(276, 457), (314, 406), (337, 409), (302, 459)]
 
-lab7_z1 = [(429, 157), (446, 134), (451, 138), (436, 161)]
-lab7_z2 = [(450, 160), (462, 138), (471, 140), (457, 164)]
+lab7_z1 = [(374,286),(406,291),(434,253),(403,249)]
+lab7_z2 = [(418,293),(444,298),(468,255),(447,250)]
 
 def RGB(event, x, y, flags, param):
     if event == cv2.EVENT_MOUSEMOVE:
@@ -37,10 +38,10 @@ def RGB(event, x, y, flags, param):
 cv2.namedWindow('Video')
 cv2.setMouseCallback('Video', RGB)
 
-cap = cv2.VideoCapture('rtsp://admin:admin1234@192.168.1.108')
+cap = cv2.VideoCapture('rtsp://admin:admin1234@172.17.18.36')
 
-fourcc = cv2.VideoWriter_fourcc(*'XVID')
-out = cv2.VideoWriter('output.mp4', fourcc, 20.0, (1020, 500))
+# fourcc = cv2.VideoWriter_fourcc(*'XVID')
+# out = cv2.VideoWriter('output.mp4', fourcc, 20.0, (1020, 500))
 
 my_file = open("coco.txt", "r")
 data = my_file.read()
@@ -255,29 +256,29 @@ while True:
         # SMO1
         result20 = cv2.pointPolygonTest(np.array(smo1_z2, np.int32), (x4, y4), False)
         if result20 >= 0:
-            lab8_people_entering[id] = (x4, y4)
+            smo1_people_entering[id] = (x4, y4)
             cv2.rectangle(frame, (x3, y3), (x4, y4), (0, 0, 255), 2)
 
-        if id in lab8_people_entering:
+        if id in smo1_people_entering:
             result21 = cv2.pointPolygonTest(np.array(smo1_z1, np.int32), (x4, y4), False)
             if result21 >= 0:
                 cv2.rectangle(frame, (x3, y3), (x4, y4), (0, 255, 0), 2)
                 cv2.circle(frame, (x4, y4), 5, (255, 0, 255), -1)
                 cv2.putText(frame, str(id), (x3, y3), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
-                lab8_entering.add(id)
+                smo1_entering.add(id)
 
         result22 = cv2.pointPolygonTest(np.array(smo1_z1, np.int32), (x4, y4), False)
         if result22 >= 0:
-            lab8_people_exiting[id] = (x4, y4)
+            smo1_people_exiting[id] = (x4, y4)
             cv2.rectangle(frame, (x3, y3), (x4, y4), (0, 255, 0), 2)
 
-        if id in lab8_people_exiting:
+        if id in smo1_people_exiting:
             result23 = cv2.pointPolygonTest(np.array(smo1_z2, np.int32), (x4, y4), False)
             if result23 >= 0:
                 cv2.rectangle(frame, (x3, y3), (x4, y4), (255, 0, 255), 2)
                 cv2.circle(frame, (x4, y4), 5, (255, 0, 255), -1)
                 cv2.putText(frame, str(id), (x3, y3), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
-                lab8_exiting.add(id)
+                smo1_exiting.add(id)
                 
     cv2.polylines(frame, [np.array(lab6_z1, np.int32)], True, (0, 0, 255), 2)
     cv2.polylines(frame, [np.array(lab6_z2, np.int32)], True, (255, 0, 0), 2)
@@ -299,41 +300,41 @@ while True:
 
     i = len(lab6_entering)
     o = len(lab6_exiting)
-    cv2.putText(frame, "Lab6 Entering: " + str(i), (60, 80), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
-    cv2.putText(frame, "Lab6 Exiting: " + str(o), (60, 100), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
+    cv2.putText(frame, "Lab6 Entering: " + str(i), (60, 140), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
+    cv2.putText(frame, "Lab6 Exiting: " + str(o), (60, 160), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
 
     i = len(shomrom_entering)
     o = len(shomrom_exiting)
-    cv2.putText(frame, "Shomrom Entering: " + str(i), (60, 120), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
-    cv2.putText(frame, "Shomrom Exiting: " + str(o), (60, 140), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
+    cv2.putText(frame, "Shomrom Entering: " + str(i), (60, 180), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
+    cv2.putText(frame, "Shomrom Exiting: " + str(o), (60, 200), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
 
     i = len(smo2_entering)
     o = len(smo2_exiting)
-    cv2.putText(frame, "Smo2 Entering: " + str(i), (60, 160), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
-    cv2.putText(frame, "Smo2 Exiting: " + str(o), (60, 180), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
+    cv2.putText(frame, "Smo2 Entering: " + str(i), (60, 220), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
+    cv2.putText(frame, "Smo2 Exiting: " + str(o), (60, 240), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
 
     i = len(lab7_entering)
     o = len(lab7_exiting)
-    cv2.putText(frame, "Lab7 Entering: " + str(i), (60, 200), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
-    cv2.putText(frame, "Lab7 Exiting: " + str(o), (60, 220), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
+    cv2.putText(frame, "Lab7 Entering: " + str(i), (60, 260), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
+    cv2.putText(frame, "Lab7 Exiting: " + str(o), (60, 280), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
 
     i = len(lab8_entering)
     o = len(lab8_exiting)
-    cv2.putText(frame, "Lab8 Entering: " + str(i), (60, 240), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
-    cv2.putText(frame, "Lab8 Exiting: " + str(o), (60, 260), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
+    cv2.putText(frame, "Lab8 Entering: " + str(i), (60, 300), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
+    cv2.putText(frame, "Lab8 Exiting: " + str(o), (60, 320), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
 
     i = len(smo1_entering)
     o = len(smo1_exiting)
-    cv2.putText(frame, "Smo1 Entering: " + str(i), (60, 280), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
-    cv2.putText(frame, "Smo1 Exiting: " + str(o), (60, 300), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
+    cv2.putText(frame, "Smo1 Entering: " + str(i), (60, 340), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
+    cv2.putText(frame, "Smo1 Exiting: " + str(o), (60, 360), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 255, 255), 1)
 
     # Write the frame to the video file
-    out.write(frame)
+    # out.write(frame)
 
     cv2.imshow("Video", frame)
     if cv2.waitKey(1) & 0xFF == 27:
         break
 
 cap.release()
-out.release()
+# out.release()
 cv2.destroyAllWindows()
